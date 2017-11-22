@@ -1,0 +1,30 @@
+{
+  "name": "quaggy",
+  "version": "0.0.1",
+  "author": "Pandraghon",
+  "description": "Quaggy the Quaggan is a GW2 bot for Discord",
+  "keywords": [
+    "discord",
+    "bot",
+    "klasa",
+    "gw2",
+    "quaggan"
+  ],
+  "main": "src/quaggy.js",
+  "homepage": "https://github.com/Pandraghon/discord-quaggy#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pandraghon/discord-quaggy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pandraghon/discord-quaggy/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "github:hydrabolt/discord.js",
+    "klasa": "github:dirigeants/klasa#SettingGateway-Rewrite"
+  }
+}
