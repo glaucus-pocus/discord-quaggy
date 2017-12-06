@@ -9,22 +9,14 @@ module.exports = class extends Command {
 			runIn: ['text', 'dm', 'group'],
 			cooldown: 60,
 			aliases: ['quoti', 'journalières'],
-			permLevel: 0,
-			botPerms: [],
-			requiredSettings: [],
-			description: '',
-			usage: '[pve|pvp|wvw|fractals|special]',
-			usageDelim: undefined,
-			extendedHelp: 'No extended help available.'
+			usage: '[demain] [pve|pvp|wvw|fractals|special]',
+			usageDelim: ' ',
 		});
 	}
 
-	async run(msg, [filter]) {
-		// This is where you place the code you want to run for your command
-		const res = await snekfetch.get('https://api.guildwars2.com/v2/achievements/daily')
+	async run(msg, [tomorrow, filter]) {		
+		const res = await snekfetch.get(`https://api.guildwars2.com/v2/achievements/daily${tomorrow ? '/tomorrow' : ''}`)
 			.then(r => r.body);
-
-		console.log(res);
 
 		if (filter && !res[filter].length) return msg.send('Qoo ! Quaggy ne sait pas quoi répondre à cela.');
 

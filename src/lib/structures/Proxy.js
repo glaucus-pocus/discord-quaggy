@@ -11,28 +11,26 @@ class Proxy extends Map {
 	}
 
 	async init() {
-		if (!this.client.settings[this._name]) {
-			await this.client.settings.add(this._name, this._validate, this._schema);
+		if (!this.client.gateways[this._name]) {
+			await this.client.gateways.add(this._name, this._validate, this._schema);
 		}
 	}
 
 	async fetchFromApi(id) {
 		console.log(`fetching ${this._name}[${id}]`);
 		return snekfetch.get(`${this._apiPath}/${id}`, {
-			headers: {
-				'Accept-Language': 'fr'
-			}
+			headers: { 'Accept-Language': 'fr' }
 		}).then(r => r.body);
 	}
 
 	async fetchFromBwd(id) {
-		const item = this.client.settings[this._name].getEntry(id);
+		const item = this.client.gateways[this._name].getEntry(id);
 		let data;
 		if (item.default) {
 			data = await this.fetchFromApi(id);
-			this.client.settings[this._name].updateMany(data, {
+			this.client.gateways[this._name].insertEntry(id, {
 				lastUpdate: 'now', data: JSON.stringify(data)
-			}, this.client.home);
+			});
 		} else {
 			console.log('item', item);
 			({ data } = item);
