@@ -20,11 +20,14 @@
     "url": "https://github.com/Pandraghon/discord-quaggy/issues"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --fix src",
+    "test": "eslint src",
+    "start": "node src/quaggy.js"
   },
   "license": "MIT",
   "dependencies": {
     "discord.js": "github:hydrabolt/discord.js",
-    "klasa": "github:dirigeants/klasa#SettingGateway-Rewrite"
+    "klasa": "github:dirigeants/klasa",
+    "moment": "^2.19.3"
   }
 }
