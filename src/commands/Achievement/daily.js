@@ -1,4 +1,4 @@
-const { Command } = require('klasa');
+const { Command, RichDisplay } = require('klasa');
 const snekfetch = require('snekfetch');
 
 module.exports = class extends Command {
@@ -10,16 +10,11 @@ module.exports = class extends Command {
 			cooldown: 60,
 			aliases: ['quoti', 'journalières'],
 			usage: '[demain] [pve|pvp|wvw|fractals|special]',
-			usageDelim: ' ',
+			usageDelim: ' '
 		});
 	}
 
-	async run(msg, [tomorrow, filter]) {		
-		const res = await snekfetch.get(`https://api.guildwars2.com/v2/achievements/daily${tomorrow ? '/tomorrow' : ''}`)
-			.then(r => r.body);
-
-		if (filter && !res[filter].length) return msg.send('Qoo ! Quaggy ne sait pas quoi répondre à cela.');
-
+	async dm(msg, res, filter) {
 		if (!filter || filter === 'pve') {
 			const ret = ['# PvE #'];
 			for (let i = 0, l = res.pve.length; i < l; ++i) {
@@ -32,7 +27,7 @@ module.exports = class extends Command {
 					`${achievement.requirement}`
 				);
 			}
-			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``);
+			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``).catch(err => this.client.emit('error', err));
 		}
 		if (!filter || filter === 'pvp') {
 			const ret = ['# PvP #'];
@@ -46,7 +41,7 @@ module.exports = class extends Command {
 					`${achievement.requirement}`
 				);
 			}
-			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``);
+			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``).catch(err => this.client.emit('error', err));
 		}
 		if (!filter || filter === 'wvw') {
 			const ret = ['# WvW #'];
@@ -60,7 +55,7 @@ module.exports = class extends Command {
 					`${achievement.requirement}`
 				);
 			}
-			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``);
+			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``).catch(err => this.client.emit('error', err));
 		}
 		if (!filter || filter === 'fractals') {
 			const ret = ['# Fractales #'];
@@ -74,8 +69,60 @@ module.exports = class extends Command {
 					`${achievement.requirement}`
 				);
 			}
-			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``);
+			msg.send(`\`\`\`md\n${ret.join('\n')}\n\`\`\``).catch(err => this.client.emit('error', err));
 		}
+	}
+
+	async generatePage(display, res, subtitle, type) {
+		const achievements = [];
+		for (let i = 0, l = res[type].length; i < l; ++i) {
+			const meta = res[type][i];
+			const achievement = await this.client.db.achievements.get(meta.id);
+			achievements.push({
+				title: `[${achievement.name}](${meta.level.min}-${meta.level.max})`,
+				description: `${achievement.requirement}`
+			});
+		}
+		display.addPage(template => {
+			template
+				.setTitle(`Succès quotidiens - ${subtitle}`)
+				.setThumbnail(this.client.assets.achievement[type])
+				.addBlankField();
+			for (let i = 0, l = achievements.length; i < l; ++i) {
+				const achievement = achievements[i];
+				template.addField(achievement.title, achievement.description);
+			}
+			return template;
+		});
+	}
+
+	async embed(msg, res, filter) {
+		const display = new RichDisplay(new this.client.methods.Embed()
+			.setAuthor(this.client.user.username, this.client.user.avatarURL())
+			.setTitle('Succès quotidiens')
+		);
+		if (!filter || filter === 'pve') {
+			await this.generatePage(display, res, 'PvE', 'pve');
+		}
+		if (!filter || filter === 'pvp') {
+			await this.generatePage(display, res, 'PvP', 'pvp');
+		}
+		if (!filter || filter === 'wvw') {
+			await this.generatePage(display, res, 'WvW', 'wvw');
+		}
+		if (!filter || filter === 'fractals') {
+			await this.generatePage(display, res, 'Fractals', 'fractals');
+		}
+		return display.run(await msg.sendMessage('Loading slideshow...'));
+	}
+
+	async run(msg, [tomorrow, filter]) {
+		const res = await snekfetch.get(`https://api.guildwars2.com/v2/achievements/daily${tomorrow ? '/tomorrow' : ''}`)
+			.then(rs => rs.body);
+
+		if (filter && !res[filter].length) return msg.send('Qoo ! Quaggy ne sait pas quoi répondre à cela.');
+
+		return msg.guild ? this.embed(msg, res, filter) : this.dm(msg, res, filter);
 	}
 
 	async init() {
