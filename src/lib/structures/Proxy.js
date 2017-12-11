@@ -18,9 +18,7 @@ class Proxy extends Map {
 
 	async fetchFromApi(id) {
 		console.log(`fetching ${this._name}[${id}]`);
-		return snekfetch.get(`${this._apiPath}/${id}`, {
-			headers: { 'Accept-Language': 'fr' }
-		}).then(r => r.body);
+		return snekfetch.get(`${this._apiPath}/${id}`, { headers: { 'Accept-Language': 'fr' } }).then(rs => rs.body);
 	}
 
 	async fetchFromBwd(id) {
@@ -28,9 +26,7 @@ class Proxy extends Map {
 		let data;
 		if (item.default) {
 			data = await this.fetchFromApi(id);
-			this.client.gateways[this._name].insertEntry(id, {
-				lastUpdate: 'now', data: JSON.stringify(data)
-			});
+			this.client.gateways[this._name].insertEntry(id, { lastUpdate: 'now', data: JSON.stringify(data) });
 		} else {
 			console.log('item', item);
 			({ data } = item);
@@ -59,7 +55,7 @@ class Proxy extends Map {
 	}
 
 	async _validate(resolver, obj) {
-		//if (!obj.id && (!obj.data || !obj.data.id)) throw 'The parameter must have an id field.';
+		// if (!obj.id && (!obj.data || !obj.data.id)) throw 'The parameter must have an id field.';
 		return obj;
 	}
 
@@ -69,7 +65,6 @@ class Proxy extends Map {
 			data: { type: 'String' }
 		};
 	}
-
 
 }
 

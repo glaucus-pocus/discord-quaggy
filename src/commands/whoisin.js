@@ -23,7 +23,7 @@ module.exports = class extends Command {
 		if (role.members.size === 0) {
 			return msg.send(`Qoo ! Personne n'est ${role.name}.`);
 		}
-		return msg.send(`Qoo ! Voici les ${role.name} : ${role.members.map(m => m.displayName).join(', ')}`);
+		return msg.send(`Qoo ! Voici les ${role.name} : ${role.members.map(member => member.displayName).join(', ')}`);
 	}
 
 };

@@ -11,7 +11,6 @@ module.exports = class extends Event {
 	}
 
 	async run() {
-		const { prefix } = this.client.config;
 		this.updateActivity();
 		this.updateAvatar();
 		await this.client.db.init();

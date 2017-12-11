@@ -7,7 +7,7 @@ module.exports = class extends Monitor {
 			enabled: true,
 			ignoreBots: true,
 			ignoreSelf: true,
-			ignoreOthers: false // 0.4.0-dev only
+			ignoreOthers: false
 		});
 	}
 
