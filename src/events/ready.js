@@ -11,10 +11,35 @@ module.exports = class extends Event {
 	}
 
 	async run() {
-		const { prefix } = this.client.config;
-		this.client.user.setActivity(`${prefix[prefix.length - 1]}help`).catch(err => this.client.emit('log', err, 'error'));
+		this.updateActivity();
 		this.updateAvatar();
 		await this.client.db.init();
+	}
+
+	async updateActivity() {
+		const today = moment();
+		let activity = '';
+		switch (today.day()) {
+			case 0:
+				// sunday
+				activity = 'Bagarre de barils';
+				break;
+			case 1:
+			case 4:
+				// monday and thursday
+				activity = 'Lancer de crabe';
+				break;
+			case 2:
+			case 5:
+				// tuesday and friday
+				activity = 'Course du Sanctuaire';
+				break;
+			case 3:
+			case 6:
+				// wednesday and saturday
+				activity = 'Survie à Sud-Soleil';
+		}
+		this.client.user.setActivity(activity).catch(err => this.client.emit('log', err, 'error'));
 	}
 
 	async updateAvatar() {

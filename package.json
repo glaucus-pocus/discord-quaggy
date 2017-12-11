@@ -29,5 +29,8 @@
     "discord.js": "github:hydrabolt/discord.js",
     "klasa": "github:dirigeants/klasa",
     "moment": "^2.19.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.13.0"
   }
 }
