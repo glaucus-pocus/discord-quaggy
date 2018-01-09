@@ -26,9 +26,8 @@ class Proxy extends Map {
 		let data;
 		if (item.default) {
 			data = await this.fetchFromApi(id);
-			this.client.gateways[this._name].insertEntry(id, { lastUpdate: 'now', data: JSON.stringify(data) });
+			(await this.client.gateways[this._name].createEntry(id)).update({ lastUpdate: 'now', data: JSON.stringify(data) });
 		} else {
-			console.log('item', item);
 			({ data } = item);
 			data = JSON.parse(data);
 		}
@@ -36,13 +35,11 @@ class Proxy extends Map {
 	}
 
 	async set(item) {
-		// console.log(`setting ${this.name}[${piece.id}]`);
 		super.set(item.id, item);
 		return item;
 	}
 
 	async get(id) {
-		console.log(`getting ${this._name}[${id}]`);
 		const existing = super.get(id);
 		if (existing) return existing;
 		const item = await this.fetchFromBwd(id);
@@ -50,11 +47,36 @@ class Proxy extends Map {
 		return item;
 	}
 
+	loadManyFromApi(ids) {
+		return snekfetch.get(`${this._apiPath}?ids=${ids.join(',')}`, { headers: { 'Accept-Language': 'fr' } }).then(rs => rs.body);
+	}
+
+	async loadManyFromBwd(ids) {
+		const gateway = this.client.gateways[this._name];
+		const missingIds = ids.filter(id => gateway.getEntry(id).default);
+		if (missingIds.length) {
+			const res = await this.loadManyFromApi(missingIds);
+			await Promise.all(res.map(item => gateway.createEntry(item.id).then(config => config.update({ lastUpdate: 'now', data: JSON.stringify(item) }))));
+		}
+		return ids.map(id => {
+			const { data } = gateway.getEntry(id);
+			return JSON.parse(data);
+		});
+	}
+
+	async loadMany(ids) {
+		const missingIds = ids.filter(id => !super.get(id));
+		if (missingIds.length) {
+			const items = await this.loadManyFromBwd(missingIds);
+			await Promise.all(items.map(this.set.bind(this)));
+		}
+	}
+
 	get _apiPath() {
 		return `https://api.guildwars2.com/v2/${this._endpoint}`;
 	}
 
-	async _validate(resolver, obj) {
+	async _validate(obj) {
 		// if (!obj.id && (!obj.data || !obj.data.id)) throw 'The parameter must have an id field.';
 		return obj;
 	}
