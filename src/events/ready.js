@@ -44,35 +44,63 @@ module.exports = class extends Event {
 
 	async updateAvatar() {
 		const today = moment();
-		let url = this.client.user.avatarURL();
+		const { quaggans } = this.client.assets;
+		const current = this.client.user.avatarURL();
+		let url = quaggans.pancake;
 		switch (today.month()) {
 			case 0:
-				if (today.date() === 1) url = 'http://wiki.guildwars2.com/images/a/a4/Party_time_quaggan_icon.png';
+				if (today.date() === 1) url = quaggans.party;
 				break;
 			case 1:
-				if (today.date() === 2) url = 'http://wiki.guildwars2.com/wiki/File:Pancakes_quaggan_icon.png';
-				else if (today.date() === 14) url = 'http://wiki.guildwars2.com/images/6/68/Girly_quaggan_icon.png';
+				if (today.date() === 2) url = quaggans.pancake;
+				else if (today.date() === 14) url = quaggans.girly;
 				break;
 			case 6:
-				url = 'http://wiki.guildwars2.com/images/0/03/Relax_quaggan_icon.png';
+				url = quaggans.relax;
 				break;
 			case 7:
-				url = 'http://wiki.guildwars2.com/images/e/e0/Bowl_icon.png';
+				url = quaggans.bowl;
 				break;
 			case 11:
-				if (today.date() === 24) url = 'http://wiki.guildwars2.com/images/d/d1/Present_quaggan_icon.png';
-				else url = 'http://wiki.guildwars2.com/images/2/25/Seasons_greetings_quaggan_icon.png';
+				if (today.date() === 24) url = quaggans.present;
+				else url = quaggans.christmas;
 				break;
 		}
-		this.client.user.setAvatar(url);
+		if (current !== url) this.client.user.setAvatar(url);
 	}
 
 	async init() {
-		if (!this.client.gateways.guilds.schema.hasKey('channels')) {
-			await this.client.gateways.guilds.schema.addFolder('channels', {
+		const { guilds, users } = this.client.gateways;
+
+		/* update guilds schema */
+		if (!guilds.schema.hasKey('channels')) {
+			await guilds.schema.addFolder('channels', {
 				bot: { type: 'TextChannel' },
 				mod: { type: 'TextChannel' },
 				starboard: { type: 'TextChannel' }
+			});
+		}
+		if (!guilds.schema.hasKey('guild')) {
+			await guilds.schema.addFolder('guild', {
+				id: {
+					type: 'String',
+					min: 36,
+					max: 36
+				},
+				apiKey: {
+					type: 'String',
+					min: 72,
+					max: 72
+				}
+			});
+		}
+
+		/* update users schema */
+		if (!users.schema.hasKey('apiKey')) {
+			await users.schema.addKey('apiKey', {
+				type: 'String',
+				min: 72,
+				max: 72
 			});
 		}
 	}

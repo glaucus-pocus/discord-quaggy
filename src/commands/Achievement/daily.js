@@ -86,7 +86,7 @@ module.exports = class extends Command {
 		display.addPage(template => {
 			template
 				.setTitle(`Succès quotidiens - ${subtitle}`)
-				.setThumbnail(this.client.assets.achievement[type])
+				.setThumbnail(this.client.assets.achievements.daily[type])
 				.addBlankField();
 			for (let i = 0, l = achievements.length; i < l; ++i) {
 				const achievement = achievements[i];
@@ -121,6 +121,9 @@ module.exports = class extends Command {
 			.then(rs => rs.body);
 
 		if (filter && !res[filter].length) return msg.send('Qoo ! Quaggy ne sait pas quoi répondre à cela.');
+		const ids = [];
+		Object.entries(res).map(type => ids.push(...type[1].map(ach => ach.id)));
+		await this.client.db.achievements.loadMany(ids);
 
 		return msg.guild ? this.embed(msg, res, filter) : this.dm(msg, res, filter);
 	}
