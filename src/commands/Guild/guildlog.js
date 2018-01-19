@@ -24,6 +24,7 @@ module.exports = class extends Command {
 		return `${entry.kicked_by} a expulsé ${entry.user} de la guilde.`;
 	}
 
+	// eslint-disable-next-line camelcase
 	async rank_change(entry) {
 		return `${entry.changed_by} a passé ${entry.user} au rang de ${entry.new_rank}.`;
 	}
@@ -33,6 +34,7 @@ module.exports = class extends Command {
 	}
 
 	async stash(entry) {
+		// eslint-disable-next-line max-len
 		return `${entry.user} a ${entry.operation === 'deposit' ? 'déposé' : 'retiré'} ${entry.coins ? `${entry.coins} pièces` : `[${entry.count} ${(await this.client.db.items.get(entry.item_id)).name}]`} dans la banque de guilde.`;
 	}
 

@@ -1,7 +1,5 @@
 const { Command, RichDisplay } = require('klasa');
 const snekfetch = require('snekfetch');
-const moment = require('moment');
-require('moment-duration-format');
 
 module.exports = class extends Command {
 
