@@ -131,8 +131,8 @@ module.exports = class extends Language {
 			COMMAND_DISABLE: (type, name) => `+ ${util.toTitleCase(this.piece(type))} désactivé${this.isFeminine(type) ? 'e' : ''} : ${name}`,
 			COMMAND_DISABLE_DESCRIPTION: 'Redésactive ou désactive temporairement un(e) commande/inhibiteur/moniteur/finaliseur/événement. L\'état par défaut sera rétabli au redémarrage.',
 			COMMAND_DISABLE_WARN: 'Vous ne voulez probablement pas désactiver cela, car vous ne serez plus capable d\'exécuter une commande pour le réactiver',
-			COMMAND_CONF_NOKEY: 'Vous devez fournir une clef',
-			COMMAND_CONF_NOVALUE: 'Vous devez fournir une valeur',
+			COMMAND_CONF_NOKEY: 'Hoo ! Vous devez fournir une clef à Quaggy',
+			COMMAND_CONF_NOVALUE: 'Hoo ! Vous devez fournir une valeur à Quaggy',
 			COMMAND_CONF_GUARDED: (name) => `${util.toTitleCase(name)} ne peut pas être désactivé.`,
 			COMMAND_CONF_ADDED: (value, key) => `La valeur \`${value}\` a été ajoutée avec succès à la clef : **${key}**`,
 			COMMAND_CONF_UPDATED: (key, response) => `La clef **${key}** a été mise à jour avec succès : \`${response}\``,
@@ -146,7 +146,7 @@ module.exports = class extends Language {
 			COMMAND_CONF_USER_DESCRIPTION: 'Établit une configuration par utilisateur.',
 			COMMAND_CONF_USER: (key, list) => `**Configuration Utilisateur${key}**\n${list}`,
 			COMMAND_STATS: (memUsage, uptime, users, servers, channels, klasaVersion, discordVersion, processVersion, msg) => [
-				'= STATISTIQUES =',
+				'= STATISTIQUES DE QUAGGY =',
 				'',
 				`• Utilisation Mem :: ${memUsage} Mo`,
 				`• Disponibilité   :: ${uptime}`,
@@ -158,7 +158,7 @@ module.exports = class extends Language {
 				`• Node.js         :: ${processVersion}`,
 				this.client.options.shardCount ? `• Shard           :: ${((msg.guild ? msg.guild.shardID : msg.channel.shardID) || this.client.options.shardId) + 1} / ${this.client.options.shardCount}` : ''
 			],
-			COMMAND_STATS_DESCRIPTION: 'Fournit des détails et statistiques à propos du bot.'
+			COMMAND_STATS_DESCRIPTION: 'Fournit des détails et statistiques à propos de Quaggy.'
 		};
 	}
 
